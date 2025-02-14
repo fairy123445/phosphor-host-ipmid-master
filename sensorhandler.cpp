@@ -806,16 +806,18 @@ get_sdr::GetSensorThresholdsResponse
     return resp;
 }
 
-// ipmi::RspType<uint8_t, 
-//               uint8_t, 
-//               uint8_t, 
-//               uint8_t, 
-//               uint8_t 
-//               >
-//     ipmiSensorcmd_test()
-// {
-// 	return ipmi::responseSuccess(0x01, 0x02, 0x03, 0x04, 0x05);
-// }
+ipmi::RspType<uint8_t, 
+              uint8_t, 
+              uint8_t, 
+              uint8_t, 
+              uint8_t 
+              >
+    ipmiSensorcmd_test(uint8_t Num)
+{
+    if(Num == 1) return ipmi::responseSuccess(0x01, 0x02, 0x03, 0x04, 0x05);
+    else if(Num == 0) return ipmi::responseSuccess(0x00, 0x00, 0x00, 0x00, 0x00);
+    else return ipmi::responseSensorInvalid();
+}
 /** @brief implements the get sensor thresholds command
  *  @param ctx - IPMI context pointer
  *  @param sensorNum - sensor number
@@ -1577,9 +1579,9 @@ void register_netfn_sen_functions()
                           ipmi::sensor_event::cmdSetSensorThreshold,
                           ipmi::Privilege::User, ipmiSenSetSensorThresholds);
                       
-    // ipmi::registerHandler(ipmi::prioOpenBmcBase, ipmi::netFnSensor,
-    //                       0x32,
-    //                       ipmi::Privilege::User, ipmiSensorcmd_test);
+    ipmi::registerHandler(ipmi::prioOpenBmcBase, ipmi::netFnSensor,
+                          0x32,
+                          ipmi::Privilege::User, ipmiSensorcmd_test);
 
     // <Get Device SDR>
     ipmi_register_callback(NETFUN_SENSOR, IPMI_CMD_GET_DEVICE_SDR, nullptr,
